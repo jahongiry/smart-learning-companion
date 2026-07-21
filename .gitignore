@@ -1,0 +1,6 @@
+.DS_Store
+*.pdf
+*.doc
+*.docx
+PROJECT_NOTES.md
+.claude/
