@@ -14,7 +14,7 @@ An educational mobile application that uses Generative AI to create personalized
 - Poojitha Myneni
 - Jahongir Yusupov
 - Lathish Muniraj - 12205208
-- Joy Dev Nath
+- Joy Dev Nath - 12295603
 
 ## Status
 
