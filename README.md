@@ -12,7 +12,7 @@ An educational mobile application that uses Generative AI to create personalized
 ## Team
 
 - Poojitha Myneni
-- Jahongir Yusupov
+- Jahongir Yusupov - 12290667
 - Lathish Muniraj - 12205208
 - Joy Dev Nath - 12295603
 
