@@ -1,9 +1,23 @@
-import { GraduationCap } from 'lucide-react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { GraduationCap, LogOut } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { getStoredUser, logout, type AuthUser } from '../lib/api'
 
 export default function Layout() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const isAuthPage = pathname === '/login' || pathname === '/register'
+  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser())
+
+  useEffect(() => {
+    setUser(getStoredUser())
+  }, [pathname])
+
+  function handleLogout() {
+    logout()
+    setUser(null)
+    navigate('/')
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-slate-950">
@@ -23,18 +37,36 @@ export default function Layout() {
 
           {!isAuthPage && (
             <nav className="flex items-center gap-3">
-              <Link
-                to="/login"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
-              >
-                Log in
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/20 transition hover:opacity-90"
-              >
-                Get started
-              </Link>
+              {user ? (
+                <>
+                  <span className="text-sm text-slate-300">
+                    Signed in as <span className="font-medium text-white">{user.name}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="rounded-lg bg-gradient-to-r from-violet-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/20 transition hover:opacity-90"
+                  >
+                    Get started
+                  </Link>
+                </>
+              )}
             </nav>
           )}
         </div>

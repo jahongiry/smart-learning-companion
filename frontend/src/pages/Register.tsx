@@ -1,15 +1,18 @@
 import { GraduationCap, Lock, Mail, User } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { registerUser, storeAuth } from '../lib/api'
 
 export default function Register() {
+  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (password !== confirmPassword) {
@@ -17,9 +20,16 @@ export default function Register() {
       return
     }
     setError('')
-
-    // TODO: wire up to the auth API once the backend is available.
-    console.log('register', { name, email, password })
+    setIsSubmitting(true)
+    try {
+      const auth = await registerUser(name, email, password)
+      storeAuth(auth)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -115,9 +125,10 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/25 transition hover:opacity-90"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/25 transition hover:opacity-90 disabled:opacity-60"
           >
-            Create account
+            {isSubmitting ? 'Creating account…' : 'Create account'}
           </button>
         </form>
 

@@ -1,15 +1,28 @@
 import { GraduationCap, Lock, Mail } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { loginUser, storeAuth } from '../lib/api'
 
 export default function Login() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // TODO: wire up to the auth API once the backend is available.
-    console.log('login', { email, password })
+    setError('')
+    setIsSubmitting(true)
+    try {
+      const auth = await loginUser(email, password)
+      storeAuth(auth)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -63,11 +76,14 @@ export default function Login() {
             </div>
           </div>
 
+          {error && <p className="text-sm text-rose-400">{error}</p>}
+
           <button
             type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/25 transition hover:opacity-90"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/25 transition hover:opacity-90 disabled:opacity-60"
           >
-            Log in
+            {isSubmitting ? 'Logging in…' : 'Log in'}
           </button>
         </form>
 
