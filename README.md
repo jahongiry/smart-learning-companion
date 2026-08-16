@@ -16,6 +16,19 @@ An educational mobile application that uses Generative AI to create personalized
 - Lathish Muniraj - 12205208
 - Joy Dev Nath - 12295603
 
+## Project Structure
+
+- `frontend/` — React + TypeScript (Vite) app, styled with Tailwind CSS. Currently has the landing page and Login/Register UI (no backend wired up yet).
+- Backend (FastAPI + PostgreSQL) — not yet scaffolded.
+
 ## Status
 
-Project setup in progress.
+Frontend scaffolded: landing page, login and register pages. Backend and GenAI integration are next.
+
+### Running the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
