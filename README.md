@@ -18,17 +18,65 @@ An educational mobile application that uses Generative AI to create personalized
 
 ## Project Structure
 
-- `frontend/` — React + TypeScript (Vite) app, styled with Tailwind CSS. Currently has the landing page and Login/Register UI (no backend wired up yet).
-- Backend (FastAPI + PostgreSQL) — not yet scaffolded.
+- `frontend/` — React + TypeScript (Vite) app, styled with Tailwind CSS. Landing page, Login/Register UI, wired up to the backend auth API.
+- `backend/` — FastAPI + SQLAlchemy + PostgreSQL. Auth API (register/login/JWT) is live; quiz generation, topic explanations and progress tracking (the GenAI features) are next.
 
 ## Status
 
-Frontend scaffolded: landing page, login and register pages. Backend and GenAI integration are next.
+Auth is fully wired end-to-end: register/login/logout works through the real backend and database, both locally and in production. GenAI-powered features (quizzes, topic explanations, personalized learning paths, progress tracking) are next.
 
-### Running the frontend
+## Live Deployment
+
+Both projects auto-deploy on every push to `main` (Vercel + GitHub integration).
+
+- **App**: https://smart-learning-companion-frontend.vercel.app
+- **API**: https://smart-learning-companion-backend.vercel.app (interactive docs at `/docs`)
+- **Database**: Neon Postgres (provisioned via Vercel Marketplace, connected to the backend project)
+
+## Local Setup
+
+### Backend
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Create `backend/.env` (not committed):
+
+```bash
+DATABASE_URL=sqlite:///./dev.db  # or a Postgres URL — see Neon connection string in Vercel dashboard
+SECRET_KEY=some-local-dev-secret
+CORS_ORIGINS=http://localhost:5173
+```
+
+Run it:
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+API is now at `http://localhost:8000` (docs at `/docs`).
+
+### Frontend
 
 ```bash
 cd frontend
 npm install
+```
+
+Create `frontend/.env` (not committed):
+
+```bash
+VITE_API_URL=http://localhost:8000/api
+```
+
+Run it:
+
+```bash
 npm run dev
 ```
+
+App is now at `http://localhost:5173`.
