@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     cors_origins: str = "http://localhost:5173"
+    anthropic_api_key: str | None = None
 
     @property
     def cors_origin_list(self) -> list[str]:
