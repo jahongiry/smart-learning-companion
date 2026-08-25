@@ -39,6 +39,12 @@ export default function Layout() {
             <nav className="flex items-center gap-3">
               {user ? (
                 <>
+                  <Link
+                    to="/quiz"
+                    className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Quiz
+                  </Link>
                   <span className="text-sm text-slate-300">
                     Signed in as <span className="font-medium text-white">{user.name}</span>
                   </span>

@@ -15,7 +15,7 @@ export default function QuizSetup() {
     setIsGenerating(true)
     try {
       const questions = await generateQuiz(config)
-      navigate('/quiz/play', { state: { questions } })
+      navigate('/quiz/play', { state: { questions, config } })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {

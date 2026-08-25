@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import QuizQuestionCard from '../components/QuizQuestionCard'
-import { scoreQuiz } from '../lib/quizApi'
-import type { QuizAnswer, QuizQuestion } from '../types/quiz'
+import { scoreQuiz, submitQuizAttempt } from '../lib/quizApi'
+import type { QuizAnswer, QuizConfig, QuizQuestion } from '../types/quiz'
 
 interface QuizPlayState {
   questions: QuizQuestion[]
+  config: QuizConfig
 }
 
 export default function QuizPlay() {
@@ -20,7 +21,7 @@ export default function QuizPlay() {
     return <Navigate to="/quiz" replace />
   }
 
-  const { questions } = state
+  const { questions, config } = state
   const currentQuestion = questions[currentIndex]
   const isFirst = currentIndex === 0
   const isLast = currentIndex === questions.length - 1
@@ -44,6 +45,9 @@ export default function QuizPlay() {
       selectedOptionId: answers[q.id] ?? null,
     }))
     const result = scoreQuiz(questions, quizAnswers)
+    submitQuizAttempt(config, result).catch((err) => {
+      console.error('Failed to save quiz attempt:', err)
+    })
     navigate('/quiz/results', { state: { result } })
   }
 

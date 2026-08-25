@@ -59,3 +59,7 @@ export function logout() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(USER_KEY)
 }
+
+export function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
+}
