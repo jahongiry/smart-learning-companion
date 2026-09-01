@@ -40,12 +40,36 @@ export default function Layout() {
               {user ? (
                 <>
                   <Link
+                    to="/dashboard"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
                     to="/quiz"
-                    className="rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
                   >
                     Quiz
                   </Link>
-                  <span className="text-sm text-slate-300">
+                  <Link
+                    to="/topics"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Explain
+                  </Link>
+                  <Link
+                    to="/learning-path"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Path
+                  </Link>
+                  <Link
+                    to="/progress"
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white"
+                  >
+                    Progress
+                  </Link>
+                  <span className="hidden text-sm text-slate-300 lg:inline">
                     Signed in as <span className="font-medium text-white">{user.name}</span>
                   </span>
                   <button

@@ -19,7 +19,7 @@ export default function Login() {
     try {
       const auth = await loginUser(email, password)
       storeAuth(auth)
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {

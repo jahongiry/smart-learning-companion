@@ -24,7 +24,7 @@ export default function Register() {
     try {
       const auth = await registerUser(name, email, password)
       storeAuth(auth)
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {

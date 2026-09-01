@@ -1,10 +1,8 @@
 import { ApiError, authorizedFetch } from './api'
+import { TOPICS_BY_SUBJECT } from './subjects'
 import type { QuizAnswer, QuizConfig, QuizQuestion, QuizResult } from '../types/quiz'
 
-export const TOPICS_BY_SUBJECT: Record<QuizConfig['subject'], string[]> = {
-  Mathematics: ['Algebra', 'Geometry', 'Trigonometry', 'Statistics'],
-  Science: ['Biology', 'Chemistry', 'Physics', 'Earth Science'],
-}
+export { TOPICS_BY_SUBJECT }
 
 interface QuizQuestionResponse {
   id: string
