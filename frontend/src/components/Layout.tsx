@@ -2,6 +2,7 @@ import { GraduationCap, LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { getStoredUser, logout, type AuthUser } from '../lib/api'
+import TutorChat from './TutorChat'
 
 export default function Layout() {
   const { pathname } = useLocation()
@@ -109,6 +110,8 @@ export default function Layout() {
       <footer className="border-t border-white/5 py-8 text-center text-sm text-slate-500">
         Smart Learning Companion &middot; COIT20273 Capstone Project &middot; {new Date().getFullYear()}
       </footer>
+
+      {!isAuthPage && user && <TutorChat />}
     </div>
   )
 }
