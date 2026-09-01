@@ -1,5 +1,5 @@
 import { ArrowRight, Route, Sparkles } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ApiError } from '../lib/api'
 import { getLearningPath } from '../lib/learningPathApi'
@@ -7,19 +7,23 @@ import type { LearningPath as LearningPathData } from '../types/learningPath'
 
 export default function LearningPath() {
   const navigate = useNavigate()
+  const [focus, setFocus] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [path, setPath] = useState<LearningPathData | null>(null)
+  const requestId = useRef(0)
 
-  useEffect(() => {
-    let cancelled = false
+  function loadPath(focusValue?: string) {
+    const thisRequest = ++requestId.current
+    setIsLoading(true)
+    setError('')
 
-    getLearningPath()
+    getLearningPath(focusValue)
       .then((result) => {
-        if (!cancelled) setPath(result)
+        if (requestId.current === thisRequest) setPath(result)
       })
       .catch((err) => {
-        if (cancelled) return
+        if (requestId.current !== thisRequest) return
         if (err instanceof ApiError && err.status === 401) {
           navigate('/login', { state: { message: err.message } })
           return
@@ -27,14 +31,19 @@ export default function LearningPath() {
         setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
       })
       .finally(() => {
-        if (!cancelled) setIsLoading(false)
+        if (requestId.current === thisRequest) setIsLoading(false)
       })
+  }
 
-    return () => {
-      cancelled = true
-    }
+  useEffect(() => {
+    loadPath()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    loadPath(focus)
+  }
 
   return (
     <section className="flex flex-1 justify-center px-6 py-16">
@@ -48,6 +57,23 @@ export default function LearningPath() {
             Personalized recommendations based on your quiz history and topics you&apos;ve explored.
           </p>
         </div>
+
+        <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-2 sm:flex-row">
+          <input
+            type="text"
+            value={focus}
+            onChange={(e) => setFocus(e.target.value)}
+            placeholder="Want to focus on something specific? e.g. Trigonometry"
+            className="flex-1 rounded-xl border border-white/10 bg-slate-950/50 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/10 disabled:opacity-60"
+          >
+            {isLoading ? 'Generating…' : 'Update path'}
+          </button>
+        </form>
 
         {isLoading && (
           <div className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-sm text-slate-400 backdrop-blur">

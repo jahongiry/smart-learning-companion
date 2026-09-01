@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -17,6 +17,7 @@ def _build_performance_summary(
     profile: UserProfile | None,
     attempts: list[QuizAttempt],
     explanations: list[TopicExplanation],
+    focus: str | None,
 ) -> str:
     lines = []
 
@@ -36,11 +37,18 @@ def _build_performance_summary(
         ]
         lines += [f"- Explored explanation: {e.subject} / {e.topic} ({e.year_level})" for e in explanations]
 
+    if focus:
+        lines.append(f"The student specifically asked to focus on: {focus}")
+
     return "\n".join(lines)
 
 
 @router.get("/generate", response_model=LearningPathResponse)
-def get_learning_path(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_learning_path(
+    focus: str | None = Query(default=None, max_length=200),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
     attempts = (
         db.query(QuizAttempt)
@@ -57,7 +65,7 @@ def get_learning_path(db: Session = Depends(get_db), current_user: User = Depend
         .all()
     )
 
-    performance_summary = _build_performance_summary(profile, attempts, explanations)
+    performance_summary = _build_performance_summary(profile, attempts, explanations, focus.strip() if focus else None)
 
     try:
         return generate_learning_path(performance_summary)

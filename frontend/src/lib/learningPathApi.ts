@@ -6,8 +6,9 @@ interface LearningPathResponseBody {
   recommendations: { subject: string; topic: string; reason: string; suggested_action: string }[]
 }
 
-export async function getLearningPath(): Promise<LearningPath> {
-  const res = await authorizedFetch('/learning-path/generate')
+export async function getLearningPath(focus?: string): Promise<LearningPath> {
+  const query = focus?.trim() ? `?focus=${encodeURIComponent(focus.trim())}` : ''
+  const res = await authorizedFetch(`/learning-path/generate${query}`)
 
   const data = await res.json().catch(() => null)
   if (!res.ok) {

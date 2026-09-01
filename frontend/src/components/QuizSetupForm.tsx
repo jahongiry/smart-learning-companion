@@ -37,7 +37,7 @@ export default function QuizSetupForm({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    void onGenerate({ subject, topic, difficulty, questionCount })
+    void onGenerate({ subject, topic: topic.trim(), difficulty, questionCount })
   }
 
   return (
@@ -67,13 +67,21 @@ export default function QuizSetupForm({
         <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-slate-300">
           Topic
         </label>
-        <select id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} className={selectClass}>
+        <input
+          id="topic"
+          type="text"
+          required
+          list="quiz-topic-suggestions"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="Pick a suggestion or type your own topic"
+          className={selectClass}
+        />
+        <datalist id="quiz-topic-suggestions">
           {TOPICS_BY_SUBJECT[subject].map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
+            <option key={t} value={t} />
           ))}
-        </select>
+        </datalist>
       </div>
 
       <div>

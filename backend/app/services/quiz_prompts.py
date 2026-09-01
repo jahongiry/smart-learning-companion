@@ -1,8 +1,3 @@
-TOPICS_BY_SUBJECT: dict[str, list[str]] = {
-    "Mathematics": ["Algebra", "Geometry", "Trigonometry", "Statistics"],
-    "Science": ["Biology", "Chemistry", "Physics", "Earth Science"],
-}
-
 QUIZ_SYSTEM_PROMPT = (
     "You are a quiz question generator for a high school STEM learning app. "
     "Given a subject, topic, difficulty and question count, generate multiple-choice questions "

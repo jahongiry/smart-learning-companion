@@ -49,7 +49,7 @@ export default function TopicExplain() {
     setIsLoading(true)
     setExplanation(null)
     try {
-      const result = await explainTopic({ subject, topic, yearLevel })
+      const result = await explainTopic({ subject, topic: topic.trim(), yearLevel })
       setExplanation(result)
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
@@ -99,13 +99,21 @@ export default function TopicExplain() {
             <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-slate-300">
               Topic
             </label>
-            <select id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} className={selectClass}>
+            <input
+              id="topic"
+              type="text"
+              required
+              list="explain-topic-suggestions"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="Pick a suggestion or type your own topic"
+              className={selectClass}
+            />
+            <datalist id="explain-topic-suggestions">
               {TOPICS_BY_SUBJECT[subject].map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
+                <option key={t} value={t} />
               ))}
-            </select>
+            </datalist>
           </div>
 
           <div>

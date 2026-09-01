@@ -11,6 +11,9 @@ LEARNING_PATH_SYSTEM_PROMPT = (
     "If the student has no quiz or topic history yet, base the recommendations entirely on their profile: "
     "stick to the subjects they said they care about, pitch difficulty to their self-rated confidence and "
     "year level, and shape the reasoning around their stated goal. "
+    "If the summary says the student specifically asked to focus on something, make that the centre of "
+    "the recommendations — most or all of them should relate directly to that request, even if it means "
+    "setting aside otherwise-reasonable suggestions from their history. "
     "suggested_action should be a short actionable instruction, e.g. 'Practice a Medium quiz on Algebra' "
     "or \"Read an explanation of Newton's Laws\"."
 )
