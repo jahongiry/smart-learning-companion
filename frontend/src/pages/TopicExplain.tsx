@@ -1,7 +1,8 @@
 import { BookOpen, Lightbulb, ListChecks, Sparkles } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ApiError } from '../lib/api'
+import { getProfile } from '../lib/profileApi'
 import { TOPICS_BY_SUBJECT } from '../lib/subjects'
 import { explainTopic } from '../lib/topicApi'
 import type { TopicExplanation, YearLevel } from '../types/topic'
@@ -20,6 +21,22 @@ export default function TopicExplain() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [explanation, setExplanation] = useState<TopicExplanation | null>(null)
+
+  useEffect(() => {
+    getProfile()
+      .then((profile) => {
+        if (profile) {
+          setYearLevel(profile.yearLevel)
+          if (!profile.subjects.includes(subject)) {
+            handleSubjectChange(profile.subjects[0])
+          }
+        }
+      })
+      .catch(() => {
+        // profile is optional — fall back to the defaults if it can't be loaded
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleSubjectChange(next: QuizSubject) {
     setSubject(next)

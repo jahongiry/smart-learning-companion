@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Landing from './pages/Landing'
 import LearningPath from './pages/LearningPath'
 import Login from './pages/Login'
+import Onboarding from './pages/Onboarding'
 import Progress from './pages/Progress'
 import QuizPlay from './pages/QuizPlay'
 import QuizResults from './pages/QuizResults'
@@ -29,6 +30,14 @@ function App() {
           element={
             <RequireAuth>
               <Dashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="onboarding"
+          element={
+            <RequireAuth>
+              <Onboarding />
             </RequireAuth>
           }
         />

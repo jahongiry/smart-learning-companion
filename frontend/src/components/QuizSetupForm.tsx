@@ -14,12 +14,20 @@ interface QuizSetupFormProps {
   onGenerate: (config: QuizConfig) => void | Promise<void>
   isGenerating: boolean
   error: string
+  initialSubject?: QuizSubject
+  initialDifficulty?: QuizDifficulty
 }
 
-export default function QuizSetupForm({ onGenerate, isGenerating, error }: QuizSetupFormProps) {
-  const [subject, setSubject] = useState<QuizSubject>('Mathematics')
-  const [topic, setTopic] = useState(TOPICS_BY_SUBJECT.Mathematics[0])
-  const [difficulty, setDifficulty] = useState<QuizDifficulty>('Medium')
+export default function QuizSetupForm({
+  onGenerate,
+  isGenerating,
+  error,
+  initialSubject = 'Mathematics',
+  initialDifficulty = 'Medium',
+}: QuizSetupFormProps) {
+  const [subject, setSubject] = useState<QuizSubject>(initialSubject)
+  const [topic, setTopic] = useState(TOPICS_BY_SUBJECT[initialSubject][0])
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>(initialDifficulty)
   const [questionCount, setQuestionCount] = useState(5)
 
   function handleSubjectChange(next: QuizSubject) {

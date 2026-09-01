@@ -2,6 +2,7 @@ import { ArrowRight, BrainCircuit, ListChecks, Route, TrendingUp } from 'lucide-
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getStoredUser } from '../lib/api'
+import { getProfile } from '../lib/profileApi'
 import { getProgressSummary } from '../lib/progressApi'
 import type { ProgressSummary } from '../types/progress'
 
@@ -35,11 +36,15 @@ const features = [
 export default function Dashboard() {
   const user = getStoredUser()
   const [summary, setSummary] = useState<ProgressSummary | null>(null)
+  const [hasProfile, setHasProfile] = useState(true)
 
   useEffect(() => {
     getProgressSummary()
       .then(setSummary)
       .catch(() => setSummary(null))
+    getProfile()
+      .then((profile) => setHasProfile(profile !== null))
+      .catch(() => setHasProfile(true))
   }, [])
 
   return (
@@ -48,6 +53,21 @@ export default function Dashboard() {
         <h1 className="text-3xl font-semibold text-white">Welcome back{user ? `, ${user.name}` : ''}</h1>
         <p className="mt-2 text-slate-400">Pick up where you left off, or jump into something new.</p>
       </div>
+
+      {!hasProfile && (
+        <Link
+          to="/onboarding"
+          className="mb-10 flex items-center justify-between gap-4 rounded-2xl border border-violet-400/20 bg-violet-500/10 p-5 backdrop-blur transition hover:bg-violet-500/15"
+        >
+          <p className="text-sm text-violet-100">
+            Tell us a bit about yourself so we can recommend the right quizzes, topics and learning path for you.
+          </p>
+          <span className="flex shrink-0 items-center gap-1.5 text-sm font-semibold text-white">
+            Get started
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      )}
 
       {summary && summary.totalQuizzes + summary.totalTopicsExplained > 0 && (
         <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">

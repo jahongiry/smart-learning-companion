@@ -1,15 +1,38 @@
 import { Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QuizSetupForm from '../components/QuizSetupForm'
 import { ApiError } from '../lib/api'
 import { generateQuiz } from '../lib/quizApi'
-import type { QuizConfig } from '../types/quiz'
+import { getProfile } from '../lib/profileApi'
+import type { QuizConfig, QuizDifficulty, QuizSubject } from '../types/quiz'
+
+const CONFIDENCE_TO_DIFFICULTY: Record<string, QuizDifficulty> = {
+  'Just starting out': 'Easy',
+  'Fairly confident': 'Medium',
+  'Very confident': 'Hard',
+}
 
 export default function QuizSetup() {
   const navigate = useNavigate()
   const [error, setError] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [defaults, setDefaults] = useState<{ subject: QuizSubject; difficulty: QuizDifficulty } | null>(null)
+
+  useEffect(() => {
+    getProfile()
+      .then((profile) => {
+        if (profile) {
+          setDefaults({
+            subject: profile.subjects[0],
+            difficulty: CONFIDENCE_TO_DIFFICULTY[profile.confidence] ?? 'Medium',
+          })
+        }
+      })
+      .catch(() => {
+        // profile is optional — fall back to the form's own defaults
+      })
+  }, [])
 
   async function handleGenerate(config: QuizConfig) {
     setError('')
@@ -39,7 +62,14 @@ export default function QuizSetup() {
           <p className="mt-1 text-sm text-slate-400">Pick a subject and topic, and we&apos;ll build a practice quiz for you.</p>
         </div>
 
-        <QuizSetupForm onGenerate={handleGenerate} isGenerating={isGenerating} error={error} />
+        <QuizSetupForm
+          key={defaults ? `${defaults.subject}-${defaults.difficulty}` : 'default'}
+          onGenerate={handleGenerate}
+          isGenerating={isGenerating}
+          error={error}
+          initialSubject={defaults?.subject}
+          initialDifficulty={defaults?.difficulty}
+        />
       </div>
     </section>
   )
