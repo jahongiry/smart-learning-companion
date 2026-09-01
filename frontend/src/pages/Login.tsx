@@ -1,13 +1,15 @@
 import { GraduationCap, Lock, Mail } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { loginUser, storeAuth } from '../lib/api'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const sessionMessage = (location.state as { message?: string } | null)?.message
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(sessionMessage ?? '')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

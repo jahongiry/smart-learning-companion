@@ -13,7 +13,14 @@ export interface AuthResponse {
   user: AuthUser
 }
 
-class ApiError extends Error {}
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
+}
 
 async function request(path: string, body: unknown): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}${path}`, {
@@ -24,7 +31,7 @@ async function request(path: string, body: unknown): Promise<AuthResponse> {
 
   const data = await res.json().catch(() => null)
   if (!res.ok) {
-    throw new ApiError(data?.detail ?? 'Something went wrong. Please try again.')
+    throw new ApiError(data?.detail ?? 'Something went wrong. Please try again.', res.status)
   }
   return data as AuthResponse
 }
@@ -62,4 +69,21 @@ export function logout() {
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)
+}
+
+export async function authorizedFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  const token = getToken()
+  const res = await fetch(`${API_URL}${path}`, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+
+  if (res.status === 401) {
+    logout()
+  }
+
+  return res
 }

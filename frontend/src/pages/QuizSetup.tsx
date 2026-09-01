@@ -2,6 +2,7 @@ import { Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QuizSetupForm from '../components/QuizSetupForm'
+import { ApiError } from '../lib/api'
 import { generateQuiz } from '../lib/quizApi'
 import type { QuizConfig } from '../types/quiz'
 
@@ -17,6 +18,10 @@ export default function QuizSetup() {
       const questions = await generateQuiz(config)
       navigate('/quiz/play', { state: { questions, config } })
     } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        navigate('/login', { state: { message: err.message } })
+        return
+      }
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setIsGenerating(false)
