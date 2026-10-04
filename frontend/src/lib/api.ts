@@ -74,8 +74,9 @@ export function getToken(): string | null {
 }
 
 export async function authorizedFetch(path: string, options: RequestInit = {}): Promise<Response> {
-  const verification = await captchaHeaders(API_URL, path)
   const token = getToken()
+  const verification = await captchaHeaders(API_URL, path)
+  if (token !== getToken()) throw new ApiError('Your account changed. Please try again.', 401)
   const headers = new Headers(options.headers)
   if (token) headers.set('Authorization', `Bearer ${token}`)
   for (const [key, value] of Object.entries(verification)) headers.set(key, value)

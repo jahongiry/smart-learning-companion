@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.session import Base, engine
-from app.models import profile, quiz, topic, user  # noqa: F401 -- registers the models with Base.metadata
+from app.models import memory, profile, quiz, topic, user  # noqa: F401 -- registers the models with Base.metadata
 from app.routers import auth, learning_path, profile as profile_router, progress, quiz as quiz_router, security, topics, tutor
 
 Base.metadata.create_all(bind=engine)

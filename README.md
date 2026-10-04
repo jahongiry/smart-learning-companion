@@ -1,6 +1,6 @@
 # Smart Learning Companion
 
-An educational mobile application that uses Generative AI to create personalized learning experiences for students. The app generates custom quizzes, explains complex topics, adapts to each student's learning pace, produces AI-generated study plans, and tracks progress over time.
+A responsive web application for Year 9–12 maths and science students. Claude generates quizzes, explanations, study suggestions and tutor replies; saved profiles and learning activity provide personal context.
 
 ## Key Features
 
@@ -8,6 +8,7 @@ An educational mobile application that uses Generative AI to create personalized
 - **Interactive Quizzes** — Quizzes and practice tests tailored to individual learning needs.
 - **Topic Explanations** — AI-generated explanations and summaries for complex subjects.
 - **Progress Tracking** — Monitors student progress and adapts learning materials accordingly.
+- **Tutor learning memory** — Saved conversations, dated progress and relevant past learning records help the tutor answer questions about the student's own learning.
 
 ## Team
 
@@ -18,12 +19,12 @@ An educational mobile application that uses Generative AI to create personalized
 
 ## Project Structure
 
-- `frontend/` — React + TypeScript (Vite) app, styled with Tailwind CSS. Landing page, Login/Register UI, wired up to the backend auth API.
-- `backend/` — FastAPI + SQLAlchemy + PostgreSQL. Auth API (register/login/JWT) is live; quiz generation, topic explanations and progress tracking (the GenAI features) are next.
+- `frontend/` — React + TypeScript (Vite), styled with Tailwind CSS.
+- `backend/` — FastAPI + SQLAlchemy, PostgreSQL in production and SQLite for local development/tests.
 
 ## Status
 
-Auth is fully wired end-to-end: register/login/logout works through the real backend and database, both locally and in production. GenAI-powered features (quizzes, topic explanations, personalized learning paths, progress tracking) are next.
+Authentication, onboarding, quizzes, explanations, progress, learning paths and the tutor are integrated. Turnstile protects authentication and AI requests. Learning memory adds server-scored quiz answers, saved explanation text, persistent tutor chats and question-based retrieval.
 
 ## Live Deployment
 
@@ -50,6 +51,7 @@ Create `backend/.env` (not committed):
 DATABASE_URL=sqlite:///./dev.db  # or a Postgres URL — see Neon connection string in Vercel dashboard
 SECRET_KEY=some-local-dev-secret
 CORS_ORIGINS=http://localhost:5173
+ANTHROPIC_API_KEY=your-local-provider-key
 ```
 
 Run it:
@@ -127,3 +129,19 @@ DATABASE_URL=sqlite:// SECRET_KEY=test .venv/bin/python -m unittest discover -s 
 ```
 
 Provider documentation: [server-side validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
+
+## Persistent learning memory
+
+New quiz generation saves the question/answer key on the server. Submission sends a quiz ID and selected answers; the backend verifies ownership, calculates the score and saves individual answers atomically with the progress record. Repeated identical submissions return the original result. The interface waits for a successful save before opening results, and retains answers on failure.
+
+New topic explanations save their full generated text. Tutor requests send only the new question and an idempotency UUID. The backend retrieves prior turns from the database, adds the student's profile and relevant learning evidence, and saves a completed question/reply pair. Reloading shows the latest 50 turns; older chat text remains searchable. **Clear conversations** deletes that student's saved turns and chat memory, while retaining quiz and topic activity.
+
+Retrieval combines SQL counts and topic/difficulty averages with ranked keyword matching over all of the signed-in student's saved learning text. It is retrieval-augmented generation, **not embedding/vector semantic search**. No additional API key or vector database is required. Exact wording and a small subject alias dictionary affect recall. Answers use a bounded selection (8 topic/difficulty groups, recent activity and up to 6 text records); the tutor must acknowledge missing evidence rather than claim complete memory. The chat UI shows the records supplied to the model, not a guarantee that every sentence is supported by those records.
+
+Date filters support today, yesterday, this/last week, this/last month, the past N days, month names with an optional year, and ISO dates. Calendar filters use UTC. First/latest scores are compared within the same topic and difficulty. Retrieved conversations are labelled as student statements or previous AI suggestions, not verified learning outcomes. The learning-path generator uses the same retrieval service.
+
+Deployment is additive: `saved_quizzes`, `learning_memories` and `tutor_turns` are created by the existing metadata initialization. Existing accounts, quiz summaries and topic history are unchanged. Historical individual answers, explanation bodies and chats cannot be reconstructed; detailed memory begins with new activity after deployment. Deploy both backend and frontend; an old in-progress quiz without a saved quiz ID must be regenerated. No secrets belong in these tables or in frontend environment variables.
+
+Offline integration tests cover account isolation, old-record retrieval, date boundaries, score integrity, invalid submissions, duplicate requests, saved explanations, conversation restoration/deletion and AI failure. Frontend tests cover restored conversations, evidence display, retry identity, deletion confirmation and quiz save failures. PostgreSQL row locks serialize quiz submissions and a student's chat/clear operations; SQLite tests do not verify production lock contention.
+
+Storage uses SQLAlchemy [JSON columns](https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON) and [unique constraints](https://docs.sqlalchemy.org/en/20/core/constraints.html#unique-constraint).

@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import QuizQuestionCard from '../components/QuizQuestionCard'
 import { scoreQuiz, submitQuizAttempt } from '../lib/quizApi'
-import type { QuizAnswer, QuizConfig, QuizQuestion } from '../types/quiz'
+import type { QuizAnswer, QuizQuestion } from '../types/quiz'
 
 interface QuizPlayState {
   questions: QuizQuestion[]
-  config: QuizConfig
+  quizId: string
 }
 
 export default function QuizPlay() {
@@ -16,12 +16,14 @@ export default function QuizPlay() {
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string | null>>({})
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState('')
 
-  if (!state?.questions?.length) {
+  if (!state?.questions?.length || !state.quizId) {
     return <Navigate to="/quiz" replace />
   }
 
-  const { questions, config } = state
+  const { questions, quizId } = state
   const currentQuestion = questions[currentIndex]
   const isFirst = currentIndex === 0
   const isLast = currentIndex === questions.length - 1
@@ -34,7 +36,8 @@ export default function QuizPlay() {
     setCurrentIndex((i) => Math.max(0, i - 1))
   }
 
-  function handleNext() {
+  async function handleNext() {
+    if (isSaving) return
     if (!isLast) {
       setCurrentIndex((i) => i + 1)
       return
@@ -45,14 +48,22 @@ export default function QuizPlay() {
       selectedOptionId: answers[q.id] ?? null,
     }))
     const result = scoreQuiz(questions, quizAnswers)
-    submitQuizAttempt(config, result).catch((err) => {
-      console.error('Failed to save quiz attempt:', err)
-    })
-    navigate('/quiz/results', { state: { result } })
+    setIsSaving(true)
+    setError('')
+    try {
+      const saved = await submitQuizAttempt(quizId, result)
+      navigate('/quiz/results', { state: { result: { ...result, scorePercent: saved.score_percent,
+        correctCount: saved.correct_count, totalQuestions: saved.total_questions } } })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save your answers. Please try again.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
-    <section className="flex flex-1 items-center justify-center px-6 py-16">
+    <section className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16">
+      {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
       <QuizQuestionCard
         question={currentQuestion}
         questionNumber={currentIndex + 1}
@@ -63,6 +74,7 @@ export default function QuizPlay() {
         onNext={handleNext}
         isFirst={isFirst}
         isLast={isLast}
+        isSaving={isSaving}
       />
     </section>
   )

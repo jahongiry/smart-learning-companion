@@ -111,7 +111,7 @@ export default function Layout() {
         Smart Learning Companion &middot; COIT20273 Capstone Project &middot; {new Date().getFullYear()}
       </footer>
 
-      {!isAuthPage && user && <TutorChat />}
+      {!isAuthPage && user && <TutorChat key={user.id} />}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { MessageCircle, Send, Sparkles, X } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ApiError, getStoredUser } from '../lib/api'
-import { sendTutorMessage } from '../lib/tutorApi'
+import { clearTutorHistory, loadTutorHistory, sendTutorMessage } from '../lib/tutorApi'
 import type { ChatMessage } from '../types/tutor'
 
 export default function TutorChat() {
@@ -12,7 +12,39 @@ export default function TutorChat() {
   const [input, setInput] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [historyReady, setHistoryReady] = useState(false)
+  const [confirmClear, setConfirmClear] = useState(false)
+  const [reload, setReload] = useState(0)
+  const pendingRequest = useRef<{ text: string; id: string } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let active = true
+    setIsLoading(true)
+    loadTutorHistory().then((saved) => {
+      if (!active) return
+      setMessages(saved)
+      setHistoryReady(true)
+      setError('')
+    }).catch((err) => {
+      if (active) setError(err instanceof Error ? err.message : 'Could not load saved conversations.')
+    }).finally(() => { if (active) setIsLoading(false) })
+    return () => { active = false }
+  }, [reload])
+
+  async function clearHistory() {
+    setIsSending(true)
+    try {
+      await clearTutorHistory()
+      setMessages([])
+      setConfirmClear(false)
+      pendingRequest.current = null
+      setError('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not clear conversations.')
+    } finally { setIsSending(false) }
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -21,7 +53,10 @@ export default function TutorChat() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const trimmed = input.trim()
-    if (!trimmed || isSending) return
+    if (!trimmed || isSending || !historyReady || isLoading) return
+    if (pendingRequest.current?.text !== trimmed) {
+      pendingRequest.current = { text: trimmed, id: crypto.randomUUID() }
+    }
 
     const nextMessages: ChatMessage[] = [...messages, { role: 'user', content: trimmed }]
     setMessages(nextMessages)
@@ -30,8 +65,9 @@ export default function TutorChat() {
     setIsSending(true)
 
     try {
-      const reply = await sendTutorMessage(nextMessages)
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
+      const response = await sendTutorMessage(trimmed, pendingRequest.current.id)
+      setMessages((prev) => [...prev, { role: 'assistant', content: response.reply, sources: response.sources }])
+      pendingRequest.current = null
     } catch (err) {
       setMessages(messages)
       setInput((value) => value || trimmed)
@@ -70,11 +106,26 @@ export default function TutorChat() {
             </button>
           </div>
 
+          <div className="border-b border-white/10 px-4 py-2 text-xs text-slate-400">
+            Chats are saved to your account. I use your profile and relevant learning history.
+            <button type="button" disabled={isSending || isLoading || !historyReady} onClick={() => setConfirmClear(true)}
+              className="ml-2 text-violet-300 underline disabled:opacity-40">Clear conversations</button>
+            {confirmClear && <div className="mt-2">
+              Delete saved chats and chat memory? Your quiz results and studied topics will stay.
+              <div className="mt-2 flex gap-4">
+                <button type="button" disabled={isSending} onClick={clearHistory} className="text-rose-300">Delete chats</button>
+                <button type="button" disabled={isSending} onClick={() => setConfirmClear(false)}>Cancel</button>
+              </div>
+            </div>}
+          </div>
+
           <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-            {messages.length === 0 && (
+            {isLoading && <p className="text-sm text-slate-400">Loading saved conversations…</p>}
+            {!isLoading && !historyReady && <button type="button" onClick={() => setReload((value) => value + 1)} className="text-sm text-violet-300">Retry loading history</button>}
+            {historyReady && messages.length === 0 && (
               <p className="text-sm text-slate-400">
-                Hi {user.name}! Ask me anything about your maths or science work — I know how you&apos;ve been
-                doing so far.
+                Hi {user.name}! Ask about your maths or science work, past quiz mistakes or what to study next.
+                I can use your saved activity, and I&apos;ll tell you when there isn&apos;t enough information.
               </p>
             )}
             {messages.map((message, index) => (
@@ -87,6 +138,15 @@ export default function TutorChat() {
                 }`}
               >
                 {message.content}
+                {!!message.sources?.length && <details className="mt-2 border-t border-white/10 pt-2 text-xs text-slate-400">
+                  <summary className="cursor-pointer text-violet-300">Learning records provided to tutor</summary>
+                  <ul className="mt-2 space-y-2">
+                    {message.sources.map((source) => <li key={source.id}>
+                      <p className="font-medium">{source.title} · {new Date(source.date).toLocaleDateString()}</p>
+                      <p className="whitespace-pre-wrap">{source.excerpt}</p>
+                    </li>)}
+                  </ul>
+                </details>}
               </div>
             ))}
             {isSending && (
@@ -101,13 +161,14 @@ export default function TutorChat() {
             <input
               type="text"
               value={input}
+              maxLength={2000}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question…"
               className="flex-1 rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
             />
             <button
               type="submit"
-              disabled={isSending || !input.trim()}
+              disabled={isSending || isLoading || !historyReady || !input.trim()}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 text-slate-950 transition hover:opacity-90 disabled:opacity-40"
               aria-label="Send"
             >

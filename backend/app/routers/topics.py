@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.captcha import require_captcha
 from app.db.session import get_db
 from app.models.topic import TopicExplanation
+from app.models.memory import LearningMemory
 from app.models.user import User
 from app.routers.auth import get_current_user
 from app.schemas.topic import TopicExplainRequest, TopicExplainResponse, TopicExplanationRead
@@ -25,14 +26,17 @@ def explain(
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
 
-    db.add(
-        TopicExplanation(
+    record = TopicExplanation(
             user_id=current_user.id,
             subject=payload.subject,
             topic=payload.topic,
             year_level=payload.year_level,
         )
-    )
+    db.add(record)
+    db.flush()
+    db.add(LearningMemory(user_id=current_user.id, source_type="explanation", source_id=str(record.id),
+                          title=f"{payload.subject}: {payload.topic}",
+                          content=f"{payload.year_level}\n{explanation.model_dump_json()}"))
     db.commit()
 
     return explanation

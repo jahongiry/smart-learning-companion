@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 QuizSubject = Literal["Mathematics", "Science"]
 QuizDifficulty = Literal["Easy", "Medium", "Hard"]
@@ -22,24 +22,34 @@ class QuizQuestion(BaseModel):
     correct_option_id: str
     explanation: str
 
+    @model_validator(mode="after")
+    def valid_options(self):
+        ids = [option.id for option in self.options]
+        if len(ids) < 2 or len(ids) != len(set(ids)) or self.correct_option_id not in ids:
+            raise ValueError("Questions must have distinct options and a valid answer key")
+        return self
+
 
 class QuizGenerateRequest(BaseModel):
     subject: QuizSubject
-    topic: str
+    topic: str = Field(min_length=1, max_length=100)
     difficulty: QuizDifficulty
     question_count: int = Field(ge=1, le=15)
 
 
 class QuizGenerateResponse(BaseModel):
+    quiz_id: str
     questions: list[QuizQuestion]
 
 
+class QuizAnswerSubmission(BaseModel):
+    question_id: str = Field(max_length=100)
+    selected_option_id: str | None = Field(default=None, max_length=100)
+
+
 class QuizSubmitRequest(BaseModel):
-    subject: QuizSubject
-    topic: str
-    difficulty: QuizDifficulty
-    total_questions: int = Field(ge=1)
-    correct_count: int = Field(ge=0)
+    quiz_id: str = Field(min_length=1, max_length=36)
+    answers: list[QuizAnswerSubmission] = Field(min_length=1, max_length=15)
 
 
 class QuizAttemptRead(BaseModel):

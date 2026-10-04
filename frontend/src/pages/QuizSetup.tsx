@@ -38,8 +38,8 @@ export default function QuizSetup() {
     setError('')
     setIsGenerating(true)
     try {
-      const questions = await generateQuiz(config)
-      navigate('/quiz/play', { state: { questions, config } })
+      const { questions, quizId } = await generateQuiz(config)
+      navigate('/quiz/play', { state: { questions, quizId } })
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         navigate('/login', { state: { message: err.message } })

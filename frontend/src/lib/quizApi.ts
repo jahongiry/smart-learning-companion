@@ -15,7 +15,7 @@ interface QuizQuestionResponse {
   explanation: string
 }
 
-export async function generateQuiz(config: QuizConfig): Promise<QuizQuestion[]> {
+export async function generateQuiz(config: QuizConfig): Promise<{ quizId: string; questions: QuizQuestion[] }> {
   const res = await authorizedFetch('/quiz/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -37,7 +37,7 @@ export async function generateQuiz(config: QuizConfig): Promise<QuizQuestion[]> 
     )
   }
 
-  return (data.questions as QuizQuestionResponse[]).map((q) => ({
+  return { quizId: data.quiz_id, questions: (data.questions as QuizQuestionResponse[]).map((q) => ({
     id: q.id,
     subject: q.subject as QuizConfig['subject'],
     topic: q.topic,
@@ -46,19 +46,16 @@ export async function generateQuiz(config: QuizConfig): Promise<QuizQuestion[]> 
     options: q.options,
     correctOptionId: q.correct_option_id,
     explanation: q.explanation,
-  }))
+  })) }
 }
 
-export async function submitQuizAttempt(config: QuizConfig, result: QuizResult): Promise<void> {
+export async function submitQuizAttempt(quizId: string, result: QuizResult): Promise<{ score_percent: number; correct_count: number; total_questions: number }> {
   const res = await authorizedFetch('/quiz/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      subject: config.subject,
-      topic: config.topic,
-      difficulty: config.difficulty,
-      total_questions: result.totalQuestions,
-      correct_count: result.correctCount,
+      quiz_id: quizId,
+      answers: result.answers.map((answer) => ({ question_id: answer.question.id, selected_option_id: answer.selectedOptionId })),
     }),
   })
 
@@ -69,6 +66,7 @@ export async function submitQuizAttempt(config: QuizConfig, result: QuizResult):
       res.status,
     )
   }
+  return res.json()
 }
 
 export function scoreQuiz(questions: QuizQuestion[], answers: QuizAnswer[]): QuizResult {

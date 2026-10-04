@@ -11,6 +11,7 @@ interface QuizQuestionCardProps {
   onNext: () => void
   isFirst: boolean
   isLast: boolean
+  isSaving?: boolean
 }
 
 export default function QuizQuestionCard({
@@ -23,6 +24,7 @@ export default function QuizQuestionCard({
   onNext,
   isFirst,
   isLast,
+  isSaving = false,
 }: QuizQuestionCardProps) {
   const progress = (questionNumber / totalQuestions) * 100
 
@@ -54,6 +56,7 @@ export default function QuizQuestionCard({
             <button
               key={option.id}
               type="button"
+              disabled={isSaving}
               onClick={() => onSelect(option.id)}
               className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm transition ${
                 isSelected
@@ -72,7 +75,7 @@ export default function QuizQuestionCard({
         <button
           type="button"
           onClick={onPrevious}
-          disabled={isFirst}
+          disabled={isFirst || isSaving}
           className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-slate-300 transition hover:text-white disabled:opacity-40 disabled:hover:text-slate-300"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -81,10 +84,10 @@ export default function QuizQuestionCard({
         <button
           type="button"
           onClick={onNext}
-          disabled={!selectedOptionId}
+          disabled={!selectedOptionId || isSaving}
           className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-violet-500/25 transition hover:opacity-90 disabled:opacity-40"
         >
-          {isLast ? 'Submit quiz' : 'Next'}
+          {isSaving ? 'Saving answers…' : isLast ? 'Submit quiz' : 'Next'}
           <ArrowRight className="h-4 w-4" />
         </button>
       </div>

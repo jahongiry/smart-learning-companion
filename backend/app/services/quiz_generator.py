@@ -28,9 +28,12 @@ def generate_quiz(subject: str, topic: str, difficulty: str, question_count: int
         raise ValueError("Claude returned a response that wasn't valid JSON") from exc
 
     try:
-        return [
+        questions = [
             QuizQuestion(id=str(uuid.uuid4()), subject=subject, topic=topic, difficulty=difficulty, **raw)
             for raw in raw_questions
         ]
+        if len(questions) != question_count:
+            raise ValueError("Claude returned an unexpected number of questions. Please try again.")
+        return questions
     except (ValidationError, TypeError) as exc:
         raise ValueError("Claude returned questions that didn't match the expected shape") from exc
