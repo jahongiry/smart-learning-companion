@@ -33,6 +33,8 @@ export default function TutorChat() {
       const reply = await sendTutorMessage(nextMessages)
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {
+      setMessages(messages)
+      setInput((value) => value || trimmed)
       if (err instanceof ApiError && err.status === 401) {
         setIsOpen(false)
         navigate('/login', { state: { message: err.message } })

@@ -1,5 +1,5 @@
 import { ArrowRight, Route, Sparkles } from 'lucide-react'
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ApiError } from '../lib/api'
 import { getLearningPath } from '../lib/learningPathApi'
@@ -8,7 +8,7 @@ import type { LearningPath as LearningPathData } from '../types/learningPath'
 export default function LearningPath() {
   const navigate = useNavigate()
   const [focus, setFocus] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [path, setPath] = useState<LearningPathData | null>(null)
   const requestId = useRef(0)
@@ -34,11 +34,6 @@ export default function LearningPath() {
         if (requestId.current === thisRequest) setIsLoading(false)
       })
   }
-
-  useEffect(() => {
-    loadPath()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -71,7 +66,7 @@ export default function LearningPath() {
             disabled={isLoading}
             className="shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/10 disabled:opacity-60"
           >
-            {isLoading ? 'Generating…' : 'Update path'}
+            {isLoading ? 'Generating…' : path ? 'Update path' : 'Generate path'}
           </button>
         </form>
 

@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { loginUser, registerUser } from './api'
+import { authorizedFetch, loginUser, registerUser } from './api'
+import { captchaHeaders } from './captcha'
+
+vi.mock('./captcha', () => ({ captchaHeaders: vi.fn().mockResolvedValue({}) }))
 
 function jsonResponse(body: unknown, ok: boolean, status = ok ? 200 : 400): Response {
   return { ok, status, json: () => Promise.resolve(body) } as Response
@@ -8,6 +11,7 @@ function jsonResponse(body: unknown, ok: boolean, status = ok ? 200 : 400): Resp
 describe('loginUser / registerUser', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn())
+    vi.mocked(captchaHeaders).mockReset().mockResolvedValue({})
   })
 
   afterEach(() => {
@@ -67,5 +71,37 @@ describe('loginUser / registerUser', () => {
     } as unknown as Response)
 
     await expect(loginUser('a@b.com', 'wrong')).rejects.toThrow('Something went wrong. Please try again.')
+  })
+
+  it('attaches verification to authentication requests', async () => {
+    vi.mocked(captchaHeaders).mockResolvedValue({ 'X-Turnstile-Token': 'verified' })
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({}, true))
+    await loginUser('a@b.com', 'password123')
+    expect(captchaHeaders).toHaveBeenCalledWith(expect.any(String), '/auth/login')
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/auth/login'), expect.objectContaining({
+      headers: { 'Content-Type': 'application/json', 'X-Turnstile-Token': 'verified' },
+    }))
+  })
+
+  it('does not send credentials or call a protected endpoint when verification fails', async () => {
+    vi.mocked(captchaHeaders).mockRejectedValue(new Error('Security check failed'))
+    await expect(loginUser('a@b.com', 'password123')).rejects.toThrow('Security check failed')
+    await expect(authorizedFetch('/quiz/generate')).rejects.toThrow('Security check failed')
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  it('preserves headers and authentication when attaching a CAPTCHA token', async () => {
+    localStorage.setItem('slc_token', 'session-token')
+    vi.mocked(captchaHeaders).mockResolvedValue({ 'X-Turnstile-Token': 'verified' })
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({}, true))
+    try {
+      await authorizedFetch('/tutor/chat', { method: 'POST', headers: new Headers({ 'Content-Type': 'application/json' }) })
+      const headers = vi.mocked(fetch).mock.calls[0][1]?.headers as Headers
+      expect(headers.get('Authorization')).toBe('Bearer session-token')
+      expect(headers.get('Content-Type')).toBe('application/json')
+      expect(headers.get('X-Turnstile-Token')).toBe('verified')
+    } finally {
+      localStorage.clear()
+    }
   })
 })

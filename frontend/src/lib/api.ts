@@ -1,3 +1,5 @@
+import { captchaHeaders } from './captcha'
+
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api'
 
 export interface AuthUser {
@@ -25,7 +27,7 @@ export class ApiError extends Error {
 async function request(path: string, body: unknown): Promise<AuthResponse> {
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...await captchaHeaders(API_URL, path) },
     body: JSON.stringify(body),
   })
 
@@ -72,13 +74,14 @@ export function getToken(): string | null {
 }
 
 export async function authorizedFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  const verification = await captchaHeaders(API_URL, path)
   const token = getToken()
+  const headers = new Headers(options.headers)
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+  for (const [key, value] of Object.entries(verification)) headers.set(key, value)
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    headers: {
-      ...options.headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+    headers,
   })
 
   if (res.status === 401) {
