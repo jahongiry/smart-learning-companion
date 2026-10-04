@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.captcha import require_captcha
 from app.db.session import get_db
 from app.models.user import User
 from app.routers.auth import get_current_user
@@ -12,7 +13,7 @@ from app.services.tutor_prompts import build_system_prompt
 router = APIRouter(prefix="/api/tutor", tags=["tutor"])
 
 
-@router.post("/chat", response_model=TutorChatResponse)
+@router.post("/chat", response_model=TutorChatResponse, dependencies=[Depends(require_captcha("tutor"))])
 def chat(
     payload: TutorChatRequest,
     db: Session = Depends(get_db),

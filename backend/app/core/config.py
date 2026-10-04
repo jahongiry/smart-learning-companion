@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     cors_origins: str = "http://localhost:5173"
     anthropic_api_key: str | None = None
+    turnstile_enabled: bool = False
+    turnstile_site_key: str = ""
+    turnstile_secret_key: str = ""
+    turnstile_hostnames: str = ""
 
     @property
     def cors_origin_list(self) -> list[str]:

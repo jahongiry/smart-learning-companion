@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.captcha import require_captcha
 from app.db.session import get_db
 from app.models.quiz import QuizAttempt
 from app.models.user import User
@@ -11,7 +12,7 @@ from app.services.quiz_generator import generate_quiz
 router = APIRouter(prefix="/api/quiz", tags=["quiz"])
 
 
-@router.post("/generate", response_model=QuizGenerateResponse)
+@router.post("/generate", response_model=QuizGenerateResponse, dependencies=[Depends(require_captcha("quiz"))])
 def generate(payload: QuizGenerateRequest, current_user: User = Depends(get_current_user)):
     try:
         questions = generate_quiz(payload.subject, payload.topic, payload.difficulty, payload.question_count)

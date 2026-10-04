@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.core.captcha import require_captcha
 from app.db.session import get_db
 from app.models.user import User
 from app.routers.auth import get_current_user
@@ -11,7 +12,7 @@ from app.services.student_context import describe_profile, load_profile, load_re
 router = APIRouter(prefix="/api/learning-path", tags=["learning-path"])
 
 
-@router.get("/generate", response_model=LearningPathResponse)
+@router.get("/generate", response_model=LearningPathResponse, dependencies=[Depends(require_captcha("learning_path"))])
 def get_learning_path(
     focus: str | None = Query(default=None, max_length=200),
     db: Session = Depends(get_db),

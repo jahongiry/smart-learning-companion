@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.captcha import require_captcha
 from app.db.session import get_db
 from app.models.topic import TopicExplanation
 from app.models.user import User
@@ -11,7 +12,7 @@ from app.services.topic_explainer import explain_topic
 router = APIRouter(prefix="/api/topics", tags=["topics"])
 
 
-@router.post("/explain", response_model=TopicExplainResponse)
+@router.post("/explain", response_model=TopicExplainResponse, dependencies=[Depends(require_captcha("explain"))])
 def explain(
     payload: TopicExplainRequest,
     db: Session = Depends(get_db),
