@@ -108,7 +108,7 @@ def retrieve_learning_memory(db: Session, user_id: int, question: str, now: date
         last = matching.order_by(QuizAttempt.created_at.desc(), QuizAttempt.id.desc()).first()
         summary["topic_statistics_subset"].append({
             "subject": subject, "topic": topic, "difficulty": difficulty, "attempts": count,
-            "average_percent": round(average, 1),
+            "average_percent": round(float(average), 1),
             "first": {"date": first.created_at.isoformat(), "score_percent": first.score_percent},
             "latest": {"date": last.created_at.isoformat(), "score_percent": last.score_percent},
         })

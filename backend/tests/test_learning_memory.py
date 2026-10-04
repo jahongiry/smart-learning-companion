@@ -6,7 +6,7 @@ import uuid
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import Numeric, cast, create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -123,7 +123,10 @@ class LearningMemoryTests(unittest.TestCase):
         self.memory(1, "September mistake", datetime(2026, 9, 10), "quiz")
         self.memory(1, "October only", datetime(2026, 10, 2))
         self.db.commit()
-        context, _ = retrieve_learning_memory(self.db, 1, "How was algebra last month?", datetime(2026, 10, 5, tzinfo=timezone.utc))
+        # PostgreSQL AVG(integer) returns Decimal; emulate that result type on SQLite.
+        decimal_average = cast(func.avg(QuizAttempt.score_percent), Numeric())
+        with patch("app.services.learning_memory.func.avg", return_value=decimal_average):
+            context, _ = retrieve_learning_memory(self.db, 1, "How was algebra last month?", datetime(2026, 10, 5, tzinfo=timezone.utc))
         import json
         facts = json.loads(context)["facts"]
         easy = next(g for g in facts["topic_statistics_subset"] if g["difficulty"] == "Easy")
