@@ -3,6 +3,8 @@ export interface LearningPathRecommendation {
   topic: string
   reason: string
   suggestedAction: string
+  actionType?: 'quiz' | 'explanation' | null
+  difficulty?: 'Easy' | 'Medium' | 'Hard' | null
 }
 
 export interface LearningPath {

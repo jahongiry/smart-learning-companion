@@ -1,7 +1,7 @@
 interface TurnstileOptions {
   sitekey: string
   action: string
-  theme: 'dark'
+  theme: 'dark' | 'light'
   size: 'flexible'
   callback: (token: string) => void
   'error-callback': () => void

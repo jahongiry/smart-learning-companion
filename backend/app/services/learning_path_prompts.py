@@ -4,7 +4,10 @@ LEARNING_PATH_SYSTEM_PROMPT = (
     "and a summary of their quiz performance and topics they've explored, "
     "recommend what they should study next. Reply with ONLY a JSON object, no prose, no markdown fences. "
     'The JSON must have this exact shape: {"summary": string, "recommendations": '
-    '[{"subject": string, "topic": string, "reason": string, "suggested_action": string}, ...]}. '
+    '[{"subject": string, "topic": string, "reason": string, "suggested_action": string, "action_type": "quiz" | "explanation", "difficulty": "Easy" | "Medium" | "Hard" | null}, ...]}. '
+    "subject must be Mathematics or Science. action_type must match suggested_action: "
+    "use explanation for reading/understanding and quiz for practice questions. "
+    "For quizzes, set difficulty to the recommended level; for explanations, use null. "
     "summary should be 1-2 encouraging sentences about their overall progress. "
     "Provide between 2 and 4 recommendations, prioritising subjects/topics with weaker scores "
     "or topics they haven't tried yet, but also suggest reasonable next topics if they're doing well everywhere. "

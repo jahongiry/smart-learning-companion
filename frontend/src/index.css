@@ -6,12 +6,86 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
 }
 
+@theme inline {
+  --color-canvas: var(--surface-canvas);
+  --color-panel: var(--surface-panel);
+  --color-field: var(--surface-field);
+  --color-elevated: var(--surface-elevated);
+  --color-subtle: var(--surface-subtle);
+  --color-surface-hover: var(--surface-hover);
+  --color-divider: var(--stroke-divider);
+  --color-outline: var(--stroke-outline);
+  --color-strong: var(--stroke-strong);
+  --color-heading: var(--ink-heading);
+  --color-body: var(--ink-body);
+  --color-muted: var(--ink-muted);
+  --color-faint: var(--ink-faint);
+  --color-accent: var(--ink-accent);
+  --color-accent-hover: var(--ink-accent-hover);
+  --color-info: var(--ink-info);
+  --color-danger: var(--ink-danger);
+  --color-success: var(--ink-success);
+  --color-title-start: var(--title-start);
+  --color-title-middle: var(--title-middle);
+  --color-title-end: var(--title-end);
+}
+
+:root {
+  color-scheme: dark;
+  --surface-canvas: #020617;
+  --surface-panel: rgb(255 255 255 / 3%);
+  --surface-field: rgb(2 6 23 / 50%);
+  --surface-elevated: #0f172a;
+  --surface-subtle: rgb(255 255 255 / 5%);
+  --surface-hover: rgb(255 255 255 / 10%);
+  --stroke-divider: rgb(255 255 255 / 5%);
+  --stroke-outline: rgb(255 255 255 / 10%);
+  --stroke-strong: rgb(255 255 255 / 20%);
+  --ink-heading: #ffffff;
+  --ink-body: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --ink-faint: #64748b;
+  --ink-accent: #c4b5fd;
+  --ink-accent-hover: #ddd6fe;
+  --ink-info: #67e8f9;
+  --ink-danger: #fb7185;
+  --ink-success: #34d399;
+  --title-start: #a78bfa;
+  --title-middle: #e879f9;
+  --title-end: #67e8f9;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --surface-canvas: #f8fafc;
+  --surface-panel: #ffffff;
+  --surface-field: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --surface-hover: #e2e8f0;
+  --stroke-divider: #e2e8f0;
+  --stroke-outline: #cbd5e1;
+  --stroke-strong: #94a3b8;
+  --ink-heading: #0f172a;
+  --ink-body: #334155;
+  --ink-muted: #475569;
+  --ink-faint: #64748b;
+  --ink-accent: #6d28d9;
+  --ink-accent-hover: #5b21b6;
+  --ink-info: #0e7490;
+  --ink-danger: #be123c;
+  --ink-success: #047857;
+  --title-start: #7c3aed;
+  --title-middle: #a21caf;
+  --title-end: #0e7490;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-canvas text-body antialiased;
   font-family: var(--font-sans);
 }
 
@@ -23,5 +97,5 @@ h4 {
 }
 
 ::selection {
-  @apply bg-violet-500/40 text-white;
+  @apply bg-violet-500/40 text-heading;
 }

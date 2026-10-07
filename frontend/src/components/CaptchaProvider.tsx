@@ -37,7 +37,7 @@ function CaptchaDialog({ challenge, onFinish }: { challenge: Challenge; onFinish
       const id = turnstile.render(widgetRef.current, {
         sitekey: challenge.siteKey,
         action: challenge.action,
-        theme: 'dark',
+        theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
         size: 'flexible',
         callback: (token) => { if (!disposed) onFinish(token) },
         'error-callback': () => { if (!disposed) setError('The security check failed. Please retry.') },
@@ -61,20 +61,20 @@ function CaptchaDialog({ challenge, onFinish }: { challenge: Challenge; onFinish
       aria-labelledby="captcha-title"
       aria-describedby="captcha-description"
       onCancel={(event) => { event.preventDefault(); onFinish() }}
-      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-white/10 bg-slate-900 p-6 text-white shadow-2xl backdrop:bg-slate-950/80"
+      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-outline bg-elevated p-6 text-heading shadow-2xl backdrop:bg-slate-950/80"
     >
       <h2 id="captcha-title" className="text-lg font-semibold">Quick security check</h2>
-      <p id="captcha-description" className="mb-5 mt-2 text-sm text-slate-300">
+      <p id="captcha-description" className="mb-5 mt-2 text-sm text-body">
         Please verify you&apos;re human to continue.
       </p>
       <div ref={widgetRef} className="min-h-16" />
-      {error && <p role="alert" className="mt-3 text-sm text-rose-300">{error}</p>}
+      {error && <p role="alert" className="mt-3 text-sm text-danger">{error}</p>}
       <div className="mt-5 flex justify-end gap-3">
-        <button type="button" onClick={() => onFinish()} className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/5">
+        <button type="button" onClick={() => onFinish()} className="rounded-lg px-3 py-2 text-sm text-body hover:bg-subtle">
           Cancel
         </button>
         {error && (
-          <button type="button" onClick={() => { setError(''); setAttempt((value) => value + 1) }} className="rounded-lg bg-violet-500 px-3 py-2 text-sm font-medium text-white">
+          <button type="button" onClick={() => { setError(''); setAttempt((value) => value + 1) }} className="rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white">
             Retry
           </button>
         )}

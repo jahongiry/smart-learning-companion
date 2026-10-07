@@ -23,10 +23,10 @@ export default function QuizResults() {
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 text-slate-950 shadow-lg shadow-violet-500/30">
             <Trophy className="h-6 w-6" strokeWidth={2.5} />
           </span>
-          <h1 className="mt-4 text-2xl font-semibold text-white">
+          <h1 className="mt-4 text-2xl font-semibold text-heading">
             You scored {result.scorePercent}%
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-muted">
             {result.correctCount} out of {result.totalQuestions} questions correct.
           </p>
         </div>
@@ -35,30 +35,30 @@ export default function QuizResults() {
           {result.answers.map(({ question, selectedOptionId, isCorrect }, index) => (
             <div
               key={question.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur"
+              className="rounded-2xl border border-outline bg-panel p-6 backdrop-blur"
             >
               <div className="mb-3 flex items-start justify-between gap-4">
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-heading">
                   {index + 1}. {question.prompt}
                 </p>
                 {isCorrect ? (
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
                 ) : (
-                  <XCircle className="h-5 w-5 shrink-0 text-rose-400" />
+                  <XCircle className="h-5 w-5 shrink-0 text-danger" />
                 )}
               </div>
 
               <div className="space-y-1.5 text-sm">
                 {!isCorrect && (
-                  <p className="text-rose-400">
+                  <p className="text-danger">
                     Your answer:{' '}
                     {question.options.find((o) => o.id === selectedOptionId)?.text ?? 'No answer selected'}
                   </p>
                 )}
-                <p className="text-emerald-400">
+                <p className="text-success">
                   Correct answer: {question.options.find((o) => o.id === question.correctOptionId)?.text}
                 </p>
-                <p className="text-slate-400">{question.explanation}</p>
+                <p className="text-muted">{question.explanation}</p>
               </div>
             </div>
           ))}

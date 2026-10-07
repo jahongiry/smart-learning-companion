@@ -63,7 +63,7 @@ export default function QuizPlay() {
 
   return (
     <section className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-16">
-      {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
+      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
       <QuizQuestionCard
         question={currentQuestion}
         questionNumber={currentIndex + 1}

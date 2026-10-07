@@ -1,6 +1,7 @@
 import { BookOpen, Lightbulb, ListChecks, Sparkles } from 'lucide-react'
-import { useEffect, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { readLearningSelection } from '../lib/learningNavigation'
 import { ApiError } from '../lib/api'
 import { getProfile } from '../lib/profileApi'
 import { TOPICS_BY_SUBJECT } from '../lib/subjects'
@@ -11,23 +12,30 @@ import type { QuizSubject } from '../types/quiz'
 const YEAR_LEVELS: YearLevel[] = ['Year 9', 'Year 10', 'Year 11', 'Year 12']
 
 const selectClass =
-  'w-full appearance-none rounded-xl border border-white/10 bg-slate-950/50 px-3.5 py-2.5 text-sm text-white outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
+  'w-full appearance-none rounded-xl border border-outline bg-field px-3.5 py-2.5 text-sm text-heading outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
 
 export default function TopicExplain() {
+  const [searchParams] = useSearchParams()
+  return <TopicExplainForm key={searchParams.toString()} selection={readLearningSelection(searchParams)} />
+}
+
+function TopicExplainForm({ selection }: { selection: ReturnType<typeof readLearningSelection> }) {
   const navigate = useNavigate()
-  const [subject, setSubject] = useState<QuizSubject>('Mathematics')
-  const [topic, setTopic] = useState(TOPICS_BY_SUBJECT.Mathematics[0])
+  const [subject, setSubject] = useState<QuizSubject>(selection.subject ?? 'Mathematics')
+  const [topic, setTopic] = useState(selection.topic ?? TOPICS_BY_SUBJECT[selection.subject ?? 'Mathematics'][0])
   const [yearLevel, setYearLevel] = useState<YearLevel>('Year 10')
+  const edited = useRef(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [explanation, setExplanation] = useState<TopicExplanation | null>(null)
 
   useEffect(() => {
+    let active = true
     getProfile()
       .then((profile) => {
-        if (profile) {
+        if (active && profile && !edited.current) {
           setYearLevel(profile.yearLevel)
-          if (!profile.subjects.includes(subject)) {
+          if (!selection.subject && !selection.topic && !profile.subjects.includes(subject)) {
             handleSubjectChange(profile.subjects[0])
           }
         }
@@ -35,10 +43,12 @@ export default function TopicExplain() {
       .catch(() => {
         // profile is optional — fall back to the defaults if it can't be loaded
       })
+    return () => { active = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleSubjectChange(next: QuizSubject) {
+    edited.current = true
     setSubject(next)
     setTopic(TOPICS_BY_SUBJECT[next][0])
   }
@@ -69,16 +79,16 @@ export default function TopicExplain() {
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 text-slate-950 shadow-lg shadow-violet-500/30">
             <BookOpen className="h-6 w-6" strokeWidth={2.5} />
           </span>
-          <h1 className="mt-4 text-2xl font-semibold text-white">Explain a topic</h1>
-          <p className="mt-1 text-sm text-slate-400">Pick a subject and topic, and we&apos;ll break it down for you.</p>
+          <h1 className="mt-4 text-2xl font-semibold text-heading">Explain a topic</h1>
+          <p className="mt-1 text-sm text-muted">Pick a subject and topic, and we&apos;ll break it down for you.</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur"
+          className="space-y-4 rounded-2xl border border-outline bg-panel p-8 backdrop-blur"
         >
           <div>
-            <label htmlFor="subject" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="subject" className="mb-1.5 block text-sm font-medium text-body">
               Subject
             </label>
             <select
@@ -96,7 +106,7 @@ export default function TopicExplain() {
           </div>
 
           <div>
-            <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-body">
               Topic
             </label>
             <input
@@ -105,7 +115,7 @@ export default function TopicExplain() {
               required
               list="explain-topic-suggestions"
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onChange={(e) => { edited.current = true; setTopic(e.target.value) }}
               placeholder="Pick a suggestion or type your own topic"
               className={selectClass}
             />
@@ -117,13 +127,13 @@ export default function TopicExplain() {
           </div>
 
           <div>
-            <label htmlFor="yearLevel" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="yearLevel" className="mb-1.5 block text-sm font-medium text-body">
               Year level
             </label>
             <select
               id="yearLevel"
               value={yearLevel}
-              onChange={(e) => setYearLevel(e.target.value as YearLevel)}
+              onChange={(e) => { edited.current = true; setYearLevel(e.target.value as YearLevel) }}
               className={selectClass}
             >
               {YEAR_LEVELS.map((y) => (
@@ -134,7 +144,7 @@ export default function TopicExplain() {
             </select>
           </div>
 
-          {error && <p className="text-sm text-rose-400">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
 
           <button
             type="submit"
@@ -147,23 +157,23 @@ export default function TopicExplain() {
         </form>
 
         {explanation && (
-          <div className="mt-6 space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur">
+          <div className="mt-6 space-y-4 rounded-2xl border border-outline bg-panel p-6 backdrop-blur">
             <div>
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="text-lg font-semibold text-heading">
                 {subject} &middot; {topic}
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-300">{explanation.summary}</p>
+              <p className="mt-2 text-sm leading-relaxed text-body">{explanation.summary}</p>
             </div>
 
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-medium text-violet-300">
+              <h3 className="flex items-center gap-2 text-sm font-medium text-accent">
                 <ListChecks className="h-4 w-4" />
                 Key points
               </h3>
-              <ul className="mt-2 space-y-1.5 text-sm text-slate-300">
+              <ul className="mt-2 space-y-1.5 text-sm text-body">
                 {explanation.keyPoints.map((point, index) => (
                   <li key={index} className="flex gap-2">
-                    <span className="text-violet-400">&bull;</span>
+                    <span className="text-accent">&bull;</span>
                     <span>{point}</span>
                   </li>
                 ))}
@@ -171,13 +181,13 @@ export default function TopicExplain() {
             </div>
 
             <div>
-              <h3 className="text-sm font-medium text-violet-300">Example</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-300">{explanation.example}</p>
+              <h3 className="text-sm font-medium text-accent">Example</h3>
+              <p className="mt-2 text-sm leading-relaxed text-body">{explanation.example}</p>
             </div>
 
             <div className="flex items-start gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
-              <p className="text-sm text-cyan-100">{explanation.practiceTip}</p>
+              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-info" />
+              <p className="text-sm text-info">{explanation.practiceTip}</p>
             </div>
           </div>
         )}

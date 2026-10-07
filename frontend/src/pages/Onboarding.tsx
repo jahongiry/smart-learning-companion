@@ -18,7 +18,7 @@ const GOALS: LearningGoal[] = [
 const CONFIDENCE_LEVELS: Confidence[] = ['Just starting out', 'Fairly confident', 'Very confident']
 
 const selectClass =
-  'w-full appearance-none rounded-xl border border-white/10 bg-slate-950/50 px-3.5 py-2.5 text-sm text-white outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
+  'w-full appearance-none rounded-xl border border-outline bg-field px-3.5 py-2.5 text-sm text-heading outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
 
 export default function Onboarding() {
   const navigate = useNavigate()
@@ -65,18 +65,18 @@ export default function Onboarding() {
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 text-slate-950 shadow-lg shadow-violet-500/30">
             <Sparkles className="h-6 w-6" strokeWidth={2.5} />
           </span>
-          <h1 className="mt-4 text-2xl font-semibold text-white">Tell us about yourself</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <h1 className="mt-4 text-2xl font-semibold text-heading">Tell us about yourself</h1>
+          <p className="mt-1 text-sm text-muted">
             A few quick questions so we can recommend the right quizzes, topics and learning path for you.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur"
+          className="space-y-4 rounded-2xl border border-outline bg-panel p-8 backdrop-blur"
         >
           <div>
-            <label htmlFor="yearLevel" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="yearLevel" className="mb-1.5 block text-sm font-medium text-body">
               Year level
             </label>
             <select
@@ -94,15 +94,15 @@ export default function Onboarding() {
           </div>
 
           <div>
-            <span className="mb-1.5 block text-sm font-medium text-slate-300">Subjects you care about</span>
+            <span className="mb-1.5 block text-sm font-medium text-body">Subjects you care about</span>
             <div className="flex gap-3">
               {SUBJECTS.map((subject) => (
                 <label
                   key={subject}
                   className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium transition ${
                     subjects.includes(subject)
-                      ? 'border-violet-400/50 bg-violet-500/10 text-white'
-                      : 'border-white/10 bg-slate-950/50 text-slate-300'
+                      ? 'border-violet-400/50 bg-violet-500/10 text-heading'
+                      : 'border-outline bg-field text-body'
                   }`}
                 >
                   <input
@@ -118,7 +118,7 @@ export default function Onboarding() {
           </div>
 
           <div>
-            <label htmlFor="goal" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="goal" className="mb-1.5 block text-sm font-medium text-body">
               What&apos;s your main goal right now?
             </label>
             <select
@@ -136,7 +136,7 @@ export default function Onboarding() {
           </div>
 
           <div>
-            <label htmlFor="confidence" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="confidence" className="mb-1.5 block text-sm font-medium text-body">
               How confident do you feel overall?
             </label>
             <select
@@ -153,7 +153,7 @@ export default function Onboarding() {
             </select>
           </div>
 
-          {error && <p className="text-sm text-rose-400">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
 
           <button
             type="submit"
@@ -164,11 +164,11 @@ export default function Onboarding() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
+        <p className="mt-6 text-center text-sm text-muted">
           <button
             type="button"
             onClick={() => navigate('/dashboard')}
-            className="font-medium text-violet-300 hover:text-violet-200"
+            className="font-medium text-accent hover:text-accent-hover"
           >
             Skip for now
           </button>

@@ -3,7 +3,7 @@ import type { LearningPath } from '../types/learningPath'
 
 interface LearningPathResponseBody {
   summary: string
-  recommendations: { subject: string; topic: string; reason: string; suggested_action: string }[]
+  recommendations: { subject: string; topic: string; reason: string; suggested_action: string; action_type?: 'quiz' | 'explanation' | null; difficulty?: 'Easy' | 'Medium' | 'Hard' | null }[]
 }
 
 export async function getLearningPath(focus?: string): Promise<LearningPath> {
@@ -28,6 +28,8 @@ export async function getLearningPath(focus?: string): Promise<LearningPath> {
       topic: r.topic,
       reason: r.reason,
       suggestedAction: r.suggested_action,
+      actionType: r.action_type,
+      difficulty: r.difficulty,
     })),
   }
 }

@@ -39,20 +39,20 @@ export default function Register() {
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 text-slate-950 shadow-lg shadow-violet-500/30">
             <GraduationCap className="h-6 w-6" strokeWidth={2.5} />
           </span>
-          <h1 className="mt-4 text-2xl font-semibold text-white">Create your account</h1>
-          <p className="mt-1 text-sm text-slate-400">Start your personalized learning journey.</p>
+          <h1 className="mt-4 text-2xl font-semibold text-heading">Create your account</h1>
+          <p className="mt-1 text-sm text-muted">Start your personalized learning journey.</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur"
+          className="space-y-4 rounded-2xl border border-outline bg-panel p-8 backdrop-blur"
         >
           <div>
-            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-body">
               Full name
             </label>
             <div className="relative">
-              <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
               <input
                 id="name"
                 type="text"
@@ -60,17 +60,17 @@ export default function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jane Doe"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
+                className="w-full rounded-xl border border-outline bg-field py-2.5 pl-10 pr-3 text-sm text-heading placeholder-faint outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-body">
               Email
             </label>
             <div className="relative">
-              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
               <input
                 id="email"
                 type="email"
@@ -78,17 +78,17 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
+                className="w-full rounded-xl border border-outline bg-field py-2.5 pl-10 pr-3 text-sm text-heading placeholder-faint outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-body">
               Password
             </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
               <input
                 id="password"
                 type="password"
@@ -97,17 +97,17 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
+                className="w-full rounded-xl border border-outline bg-field py-2.5 pl-10 pr-3 text-sm text-heading placeholder-faint outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-slate-300">
+            <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-body">
               Confirm password
             </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-faint" />
               <input
                 id="confirmPassword"
                 type="password"
@@ -116,12 +116,12 @@ export default function Register() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/50 py-2.5 pl-10 pr-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
+                className="w-full rounded-xl border border-outline bg-field py-2.5 pl-10 pr-3 text-sm text-heading placeholder-faint outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20"
               />
             </div>
           </div>
 
-          {error && <p className="text-sm text-rose-400">{error}</p>}
+          {error && <p className="text-sm text-danger">{error}</p>}
 
           <button
             type="submit"
@@ -132,9 +132,9 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
+        <p className="mt-6 text-center text-sm text-muted">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-violet-300 hover:text-violet-200">
+          <Link to="/login" className="font-medium text-accent hover:text-accent-hover">
             Log in
           </Link>
         </p>

@@ -46,22 +46,22 @@ export default function Progress() {
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 text-slate-950 shadow-lg shadow-violet-500/30">
           <TrendingUp className="h-6 w-6" strokeWidth={2.5} />
         </span>
-        <h1 className="mt-4 text-2xl font-semibold text-white">Your progress</h1>
-        <p className="mt-1 text-sm text-slate-400">Track how your scores and activity are building up over time.</p>
+        <h1 className="mt-4 text-2xl font-semibold text-heading">Your progress</h1>
+        <p className="mt-1 text-sm text-muted">Track how your scores and activity are building up over time.</p>
       </div>
 
       {isLoading && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-center text-sm text-slate-400 backdrop-blur">
+        <div className="rounded-2xl border border-outline bg-panel p-10 text-center text-sm text-muted backdrop-blur">
           Loading your progress…
         </div>
       )}
 
       {!isLoading && error && (
-        <div className="rounded-2xl border border-rose-400/20 bg-rose-400/5 p-6 text-sm text-rose-300">{error}</div>
+        <div className="rounded-2xl border border-rose-400/20 bg-rose-400/5 p-6 text-sm text-danger">{error}</div>
       )}
 
       {!isLoading && !error && summary && summary.totalQuizzes + summary.totalTopicsExplained === 0 && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 text-center text-sm text-slate-400 backdrop-blur">
+        <div className="rounded-2xl border border-outline bg-panel p-10 text-center text-sm text-muted backdrop-blur">
           No activity yet — take a quiz or explain a topic to start building your progress.
         </div>
       )}
@@ -69,27 +69,27 @@ export default function Progress() {
       {!isLoading && !error && summary && summary.totalQuizzes + summary.totalTopicsExplained > 0 && (
         <div className="space-y-8">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur">
-              <p className="text-sm text-slate-400">Quizzes taken</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{summary.totalQuizzes}</p>
+            <div className="rounded-2xl border border-outline bg-panel p-6 backdrop-blur">
+              <p className="text-sm text-muted">Quizzes taken</p>
+              <p className="mt-1 text-3xl font-semibold text-heading">{summary.totalQuizzes}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur">
-              <p className="text-sm text-slate-400">Average score</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{summary.averageScore}%</p>
+            <div className="rounded-2xl border border-outline bg-panel p-6 backdrop-blur">
+              <p className="text-sm text-muted">Average score</p>
+              <p className="mt-1 text-3xl font-semibold text-heading">{summary.averageScore}%</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur">
-              <p className="text-sm text-slate-400">Topics explored</p>
-              <p className="mt-1 text-3xl font-semibold text-white">{summary.totalTopicsExplained}</p>
+            <div className="rounded-2xl border border-outline bg-panel p-6 backdrop-blur">
+              <p className="text-sm text-muted">Topics explored</p>
+              <p className="mt-1 text-3xl font-semibold text-heading">{summary.totalTopicsExplained}</p>
             </div>
           </div>
 
           {summary.bySubject.length > 0 && (
             <div>
-              <h2 className="mb-3 text-sm font-medium text-slate-300">By subject</h2>
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur">
+              <h2 className="mb-3 text-sm font-medium text-body">By subject</h2>
+              <div className="overflow-x-auto rounded-2xl border border-outline bg-panel backdrop-blur">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-white/10 text-slate-400">
+                    <tr className="border-b border-outline text-muted">
                       <th className="px-5 py-3 font-medium">Subject</th>
                       <th className="px-5 py-3 font-medium">Quizzes taken</th>
                       <th className="px-5 py-3 font-medium">Average score</th>
@@ -98,7 +98,7 @@ export default function Progress() {
                   </thead>
                   <tbody>
                     {summary.bySubject.map((s) => (
-                      <tr key={s.subject} className="border-b border-white/5 last:border-0 text-slate-200">
+                      <tr key={s.subject} className="border-b border-divider last:border-0 text-body">
                         <td className="px-5 py-3 font-medium">{s.subject}</td>
                         <td className="px-5 py-3">{s.quizzesTaken}</td>
                         <td className="px-5 py-3">{s.averageScore}%</td>
@@ -113,14 +113,14 @@ export default function Progress() {
 
           {summary.recentActivity.length > 0 && (
             <div>
-              <h2 className="mb-3 text-sm font-medium text-slate-300">Recent activity</h2>
+              <h2 className="mb-3 text-sm font-medium text-body">Recent activity</h2>
               <div className="space-y-2">
                 {summary.recentActivity.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 backdrop-blur"
+                    className="flex items-center gap-3 rounded-xl border border-outline bg-panel px-4 py-3 backdrop-blur"
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-400/20 text-violet-300">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-cyan-400/20 text-accent">
                       {item.type === 'quiz' ? (
                         <ListChecks className="h-4 w-4" />
                       ) : (
@@ -128,12 +128,12 @@ export default function Progress() {
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white">
+                      <p className="truncate text-sm font-medium text-heading">
                         {item.subject} &middot; {item.topic}
                       </p>
-                      <p className="truncate text-xs text-slate-400">{item.detail}</p>
+                      <p className="truncate text-xs text-muted">{item.detail}</p>
                     </div>
-                    <p className="shrink-0 text-xs text-slate-500">{formatDate(item.createdAt)}</p>
+                    <p className="shrink-0 text-xs text-faint">{formatDate(item.createdAt)}</p>
                   </div>
                 ))}
               </div>

@@ -8,7 +8,7 @@ const DIFFICULTIES: QuizDifficulty[] = ['Easy', 'Medium', 'Hard']
 const QUESTION_COUNTS = [5, 10, 15]
 
 const selectClass =
-  'w-full appearance-none rounded-xl border border-white/10 bg-slate-950/50 px-3.5 py-2.5 text-sm text-white outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
+  'w-full appearance-none rounded-xl border border-outline bg-field px-3.5 py-2.5 text-sm text-heading outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/20'
 
 interface QuizSetupFormProps {
   onGenerate: (config: QuizConfig) => void | Promise<void>
@@ -16,6 +16,7 @@ interface QuizSetupFormProps {
   error: string
   initialSubject?: QuizSubject
   initialDifficulty?: QuizDifficulty
+  initialTopic?: string
 }
 
 export default function QuizSetupForm({
@@ -24,9 +25,10 @@ export default function QuizSetupForm({
   error,
   initialSubject = 'Mathematics',
   initialDifficulty = 'Medium',
+  initialTopic,
 }: QuizSetupFormProps) {
   const [subject, setSubject] = useState<QuizSubject>(initialSubject)
-  const [topic, setTopic] = useState(TOPICS_BY_SUBJECT[initialSubject][0])
+  const [topic, setTopic] = useState(initialTopic || TOPICS_BY_SUBJECT[initialSubject][0])
   const [difficulty, setDifficulty] = useState<QuizDifficulty>(initialDifficulty)
   const [questionCount, setQuestionCount] = useState(5)
 
@@ -43,10 +45,10 @@ export default function QuizSetupForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur"
+      className="space-y-4 rounded-2xl border border-outline bg-panel p-8 backdrop-blur"
     >
       <div>
-        <label htmlFor="subject" className="mb-1.5 block text-sm font-medium text-slate-300">
+        <label htmlFor="subject" className="mb-1.5 block text-sm font-medium text-body">
           Subject
         </label>
         <select
@@ -64,7 +66,7 @@ export default function QuizSetupForm({
       </div>
 
       <div>
-        <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-slate-300">
+        <label htmlFor="topic" className="mb-1.5 block text-sm font-medium text-body">
           Topic
         </label>
         <input
@@ -85,7 +87,7 @@ export default function QuizSetupForm({
       </div>
 
       <div>
-        <label htmlFor="difficulty" className="mb-1.5 block text-sm font-medium text-slate-300">
+        <label htmlFor="difficulty" className="mb-1.5 block text-sm font-medium text-body">
           Difficulty
         </label>
         <select
@@ -103,7 +105,7 @@ export default function QuizSetupForm({
       </div>
 
       <div>
-        <label htmlFor="questionCount" className="mb-1.5 block text-sm font-medium text-slate-300">
+        <label htmlFor="questionCount" className="mb-1.5 block text-sm font-medium text-body">
           Number of questions
         </label>
         <select
@@ -120,7 +122,7 @@ export default function QuizSetupForm({
         </select>
       </div>
 
-      {error && <p className="text-sm text-rose-400">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <button
         type="submit"
