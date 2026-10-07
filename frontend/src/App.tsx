@@ -13,6 +13,7 @@ import QuizResults from './pages/QuizResults'
 import QuizSetup from './pages/QuizSetup'
 import Register from './pages/Register'
 import TopicExplain from './pages/TopicExplain'
+import Telegram from './pages/Telegram'
 
 function Home() {
   return getStoredUser() ? <Navigate to="/dashboard" replace /> : <Landing />
@@ -23,6 +24,7 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="telegram" element={<RequireAuth><Telegram /></RequireAuth>} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route

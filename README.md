@@ -145,3 +145,7 @@ Deployment is additive: `saved_quizzes`, `learning_memories` and `tutor_turns` a
 Offline integration tests cover account isolation, old-record retrieval, date boundaries, score integrity, invalid submissions, duplicate requests, saved explanations, conversation restoration/deletion and AI failure. Frontend tests cover restored conversations, evidence display, retry identity, deletion confirmation and quiz save failures. PostgreSQL row locks serialize quiz submissions and a student's chat/clear operations; SQLite tests do not verify production lock contention.
 
 Storage uses SQLAlchemy [JSON columns](https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.JSON) and [unique constraints](https://docs.sqlalchemy.org/en/20/core/constraints.html#unique-constraint).
+
+## Telegram integration
+
+The optional Telegram connection supports personalised tutor questions, opt-in daily quizzes and facts, and quiz scores saved to website progress. Setup requires a dedicated Telegram bot and an authenticated worker scheduler. See [configuration and deployment instructions](docs/telegram-integration.md). It is disabled by default without server credentials. Incoming questions are processed through the webhook; the GitHub Actions scheduler handles daily delivery and retries.

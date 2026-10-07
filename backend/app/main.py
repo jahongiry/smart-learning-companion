@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.session import Base, engine
-from app.models import memory, profile, quiz, topic, user  # noqa: F401 -- registers the models with Base.metadata
-from app.routers import auth, learning_path, profile as profile_router, progress, quiz as quiz_router, security, topics, tutor
+from app.models import memory, profile, quiz, topic, user, telegram as telegram_models  # noqa: F401 -- registers the models with Base.metadata
+from app.routers import telegram, auth, learning_path, profile as profile_router, progress, quiz as quiz_router, security, topics, tutor
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,6 +26,7 @@ app.include_router(learning_path.router)
 app.include_router(profile_router.router)
 app.include_router(tutor.router)
 app.include_router(security.router)
+app.include_router(telegram.router)
 
 
 @app.get("/api/health")

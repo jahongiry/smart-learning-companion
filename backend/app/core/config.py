@@ -14,6 +14,14 @@ class Settings(BaseSettings):
     turnstile_site_key: str = ""
     turnstile_secret_key: str = ""
     turnstile_hostnames: str = ""
+    telegram_enabled: bool = False
+    telegram_process_inline: bool = True
+    telegram_bot_token: str = ""
+    telegram_bot_username: str = ""
+    telegram_webhook_secret: str = ""
+    cron_secret: str = ""
+    telegram_daily_question_limit: int = 30
+    frontend_url: str = "https://smart-learning-companion-frontend.vercel.app"
 
     @property
     def cors_origin_list(self) -> list[str]:

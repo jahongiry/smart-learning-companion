@@ -1,0 +1,42 @@
+name: Telegram learning delivery
+
+on:
+  schedule:
+    - cron: '2-57/5 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: telegram-learning-delivery
+  cancel-in-progress: false
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Process due lessons and retry pending replies
+        env:
+          CRON_SECRET: ${{ secrets.TELEGRAM_CRON_SECRET }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+          secret = os.environ.get('CRON_SECRET', '')
+          if not secret:
+              sys.exit('Missing TELEGRAM_CRON_SECRET repository secret')
+          request = Request(
+              'https://smart-learning-companion-backend.vercel.app/api/telegram/worker',
+              headers={'Authorization': 'Bearer ' + secret},
+          )
+          try:
+              with urlopen(request, timeout=110) as response:
+                  result = json.load(response)
+              print('Worker completed:', {key: result.get(key) for key in ('queued', 'steps')})
+          except HTTPError as error:
+              sys.exit(f'Worker returned HTTP {error.code}')
+          except (URLError, TimeoutError, ValueError):
+              sys.exit('Worker unavailable; inspect backend logs before retrying')
+          PY

@@ -1,4 +1,4 @@
-import { ArrowRight, BrainCircuit, ListChecks, Route, TrendingUp } from 'lucide-react'
+import { ArrowRight, BrainCircuit, ListChecks, Route, Send, TrendingUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getStoredUser } from '../lib/api'
@@ -7,6 +7,10 @@ import { getProgressSummary } from '../lib/progressApi'
 import type { ProgressSummary } from '../types/progress'
 
 const features = [
+  {
+    to: '/telegram', icon: Send, title: 'Learn on Telegram',
+    description: 'Ask your tutor questions and opt in to a daily quiz and a new fact.',
+  },
   {
     to: '/quiz',
     icon: ListChecks,
