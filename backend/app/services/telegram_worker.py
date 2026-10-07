@@ -6,6 +6,8 @@ a crash after sending but before committing may repeat that one message.
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
 import time
+import logging
+from pydantic import ValidationError
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
@@ -16,6 +18,15 @@ from app.models.telegram import TelegramConnection, TelegramDaily, TelegramUpdat
 from app.models.user import User
 from app.services.telegram_api import TelegramError, message, telegram_call
 from app.services.telegram_learning import generate_daily, telegram_reply
+
+
+logger = logging.getLogger(__name__)
+
+
+def log_failure(kind, exc):
+    details = [{'type': error['type'], 'loc': error['loc']} for error in exc.errors()] if isinstance(exc, ValidationError) else []
+    logger.warning('Telegram %s failed: %s status=%s validation=%s', kind, type(exc).__name__,
+                   getattr(exc, 'status_code', None), details)
 
 
 def utcnow():
@@ -192,6 +203,7 @@ def work_update(db, update_id=None):
             send_step(job)
         db.commit()
     except Exception as exc:
+        log_failure('delivery', exc)
         db.rollback()
         job = db.query(TelegramUpdate).filter_by(update_id=job_id).with_for_update().one()
         job.attempts += 1
@@ -259,6 +271,7 @@ def work_daily(db):
                 daily.status = 'done'
         db.commit()
     except Exception as exc:
+        log_failure('delivery', exc)
         db.rollback()
         daily = db.query(TelegramDaily).filter_by(id=daily_id).with_for_update().one()
         daily.attempts += 1
