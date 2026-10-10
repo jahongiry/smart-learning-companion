@@ -14,6 +14,7 @@ import QuizSetup from './pages/QuizSetup'
 import Register from './pages/Register'
 import TopicExplain from './pages/TopicExplain'
 import Telegram from './pages/Telegram'
+import AISettings from './pages/AISettings'
 
 function Home() {
   return getStoredUser() ? <Navigate to="/dashboard" replace /> : <Landing />
@@ -25,6 +26,7 @@ function App() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="telegram" element={<RequireAuth><Telegram /></RequireAuth>} />
+        <Route path="ai-settings" element={<RequireAuth><AISettings /></RequireAuth>} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route

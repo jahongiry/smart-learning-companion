@@ -73,6 +73,9 @@ export default function Layout() {
                     >
                       Progress
                     </Link>
+                    <Link to="/ai-settings" className="rounded-lg px-3 py-2 text-sm font-medium text-body transition hover:text-heading">
+                      AI settings
+                    </Link>
                     <span className="hidden text-sm text-body lg:inline">
                       Signed in as <span className="font-medium text-heading">{user.name}</span>
                     </span>
