@@ -114,8 +114,11 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-divider py-8 text-center text-sm text-faint">
-        Smart Learning Companion &middot; COIT20273 Capstone Project &middot; {new Date().getFullYear()}
+      <footer className="border-t border-divider px-6 py-8 text-center text-sm text-faint">
+        <p className="mx-auto mb-3 max-w-2xl text-body">
+          AI can make mistakes. Check important answers with a teacher or trusted source.
+        </p>
+        <p>Smart Learning Companion &middot; COIT20273 Capstone Project &middot; {new Date().getFullYear()}</p>
       </footer>
 
       {!isAuthPage && user && <TutorChat key={user.id} />}

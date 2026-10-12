@@ -157,6 +157,9 @@ export default function TutorChat() {
             {error && <p className="text-sm text-danger">{error}</p>}
           </div>
 
+          <p className="px-3 pb-2 text-center text-xs text-muted">
+            AI can make mistakes. Check important answers with a teacher or trusted source.
+          </p>
           <form onSubmit={handleSubmit} className="flex gap-2 border-t border-outline p-3">
             <input
               type="text"
