@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.telegram import TelegramDaily
 from app.schemas.telegram import DailyLesson
 from app.services.anthropic_client import get_anthropic_client
+from app.services.answering_policy import ANSWERING_POLICY
 from app.services.learning_memory import retrieve_learning_memory
 from app.services.student_context import describe_profile, load_profile
 from app.services.tutor_prompts import build_system_prompt
@@ -45,7 +46,7 @@ def generate_daily(db: Session, user_id: int) -> DailyLesson:
         TelegramDaily.created_at.desc()).limit(7).all()
     previous = [{'topic': d.content['topic'], 'fact': d.content['fact'],
                  'questions': [q['prompt'] for q in d.content['questions']]} for d in recent]
-    system = (
+    system = ANSWERING_POLICY + '\n' + (
         'Create a daily high-school STEM mini lesson with exactly five multiple-choice questions and one new useful fact. '
         'Choose ONE topic from recent learning or recorded mistakes, and tailor difficulty to the profile. '
         'If there is no history, use their profile or beginner mathematics. Vary questions and fact from recent lessons. '

@@ -1,4 +1,6 @@
-TOPIC_SYSTEM_PROMPT = (
+from app.services.answering_policy import ANSWERING_POLICY
+
+TOPIC_SYSTEM_PROMPT = ANSWERING_POLICY + "\n" + (
     "You are a patient STEM tutor for high school students. "
     "Given a subject, topic and year level, explain the topic clearly and reply with ONLY a JSON object "
     "no prose, no markdown code fences. The JSON must have this exact shape: "

@@ -148,4 +148,6 @@ Storage uses SQLAlchemy [JSON columns](https://docs.sqlalchemy.org/en/20/core/ty
 
 ## Telegram integration
 
+All generated learning content uses the shared accuracy policy in `backend/app/services/answering_policy.py`: website and Telegram tutoring, quizzes, topic explanations, learning paths and Telegram daily lessons. It requires evidence for personal claims, clear uncertainty, calculation and answer-key checks, and no invented sources or tool use. These are model instructions, not an independent fact checker or a guarantee of correctness. Existing saved content is not regenerated. Offline tests mock AI responses and do not measure model compliance or hallucination rates.
+
 The optional Telegram connection supports personalised tutor questions, opt-in daily quizzes and facts, and quiz scores saved to website progress. Setup requires a dedicated Telegram bot and an authenticated worker scheduler. See [configuration and deployment instructions](docs/telegram-integration.md). It is disabled by default without server credentials. Incoming questions are processed through the webhook; the GitHub Actions scheduler handles daily delivery and retries.

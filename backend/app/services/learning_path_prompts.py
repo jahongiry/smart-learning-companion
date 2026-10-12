@@ -1,4 +1,6 @@
-LEARNING_PATH_SYSTEM_PROMPT = (
+from app.services.answering_policy import ANSWERING_POLICY
+
+LEARNING_PATH_SYSTEM_PROMPT = ANSWERING_POLICY + "\n" + (
     "You are an academic advisor for a high school STEM learning app. "
     "Given a student's profile (year level, subjects they care about, stated goal, self-rated confidence) "
     "and a summary of their quiz performance and topics they've explored, "

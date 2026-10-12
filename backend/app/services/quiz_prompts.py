@@ -1,4 +1,6 @@
-QUIZ_SYSTEM_PROMPT = (
+from app.services.answering_policy import ANSWERING_POLICY
+
+QUIZ_SYSTEM_PROMPT = ANSWERING_POLICY + "\n" + (
     "You are a quiz question generator for a high school STEM learning app. "
     "Given a subject, topic, difficulty and question count, generate multiple-choice questions "
     "and reply with ONLY a JSON array — no prose, no markdown code fences. "

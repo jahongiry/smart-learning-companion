@@ -1,8 +1,10 @@
 from app.models.profile import UserProfile
+from app.services.answering_policy import ANSWERING_POLICY
 
 
 def build_system_prompt(student_name: str, profile: UserProfile | None, history_summary: str) -> str:
     lines = [
+        ANSWERING_POLICY,
         f"You are a friendly, encouraging AI tutor inside the Smart Learning Companion app, "
         f"chatting with a high school student named {student_name}.",
         "Keep replies short and conversational — a few sentences, not an essay — since this is a small "
